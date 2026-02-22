@@ -9,18 +9,19 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+from dotenv import load_dotenv
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t)!pf8aimxnb!$#8!8)v+l&hyfr9)n(y=ok&f&5j51-(js5*l#'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -31,17 +32,26 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Libs de terceros
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    # Mis apps
+    'apps.armament',
+    #'apps.users',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -50,6 +60,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 TEMPLATES = [
     {
@@ -72,12 +88,6 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -116,7 +126,75 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173", # Puerto por defecto de Vite
+    "http://127.0.0.1:5173",
+]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# ------------------- CONFIGURACIÓN DE JAZZMIN -------------------
+JAZZMIN_SETTINGS = {
+    # Título para la ventana del navegador y el login
+    "site_title": "WARW Admin",
+
+    # Título en la cabecera (puedes usar <br> para saltos de línea)
+    "site_header": "WARW",
+
+    # Título en el logo (normalmente más corto)
+    "site_brand": "WARW",
+
+    # Mensaje de bienvenida en la pantalla de login
+    "welcome_sign": "Bienvenido a la Enciclopedia WARW",
+
+    # Copyright en el footer
+    "copyright": "WARW Project",
+
+    # Modelos que quieres que tengan una barra de búsqueda en la lista
+    "search_model": ["armament.Arma", "armament.Vehiculo", "armament.Pais"],
+
+    # --- Personalización de la UI ---
+    "ui_tweaks": {
+        "navbar_small_text": False,
+        "footer_small_text": False,
+        "body_small_text": False,
+        "brand_small_text": False,
+        "brand_colour": "navbar-dark",
+        "accent": "accent-primary",
+        "navbar": "navbar-dark",
+        "no_navbar_border": False,
+        "navbar_fixed": True,
+        "layout_boxed": False,
+        "footer_fixed": False,
+        "sidebar_fixed": True,
+        "sidebar": "sidebar-dark-primary",
+        "sidebar_nav_small_text": False,
+        "sidebar_disable_expand": False,
+        "sidebar_nav_child_indent": False,
+        "sidebar_nav_compact_style": False,
+        "sidebar_nav_legacy_style": False,
+        "sidebar_nav_flat_style": True,
+        "theme": "darkly",
+        "dark_mode_theme": "darkly",
+        "button_classes": {
+            "primary": "btn-outline-primary",
+            "secondary": "btn-outline-secondary",
+            "info": "btn-info",
+            "warning": "btn-warning",
+            "danger": "btn-danger",
+            "success": "btn-success"
+        }
+    }
+}

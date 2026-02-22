@@ -58,3 +58,10 @@ static_root/
 *.njsproj
 *.sln
 *.sw?
+
+DB_ENGINE_PROD=mssql
+DB_NAME_PROD=warw_prod_db
+DB_USER_PROD=usuario_prod
+DB_PASSWORD_PROD=password_prod
+DB_HOST_PROD=localhost
+DB_PORT_PROD=1433
